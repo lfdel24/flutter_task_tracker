@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:task_tracker/task_component/model/task_model.dart';
+import 'package:task_tracker/task_component/task_controller.dart';
 
 class TaskPage extends StatelessWidget {
+  void load() async {
+    final controller = TaskController();
+    controller.save(TaskModel("1", "Mi tarea", "${DateTime.now()}", false));
+    await controller.loadTasks();
+    print("Mis tareas: ${controller.vnTasks.value.toString()}");
+  }
+
   @override
   Widget build(BuildContext context) {
+    //
+    load();
+    //
     return Scaffold(
       body: Align(
         alignment: Alignment.topCenter,
