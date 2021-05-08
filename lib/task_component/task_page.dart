@@ -46,14 +46,17 @@ class _BuilderBody extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Task Tracker",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                "Task Tracker | lfdel24@gmail.com",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
               ),
               Expanded(child: Container()),
+              ValueListenableBuilder(
+                valueListenable: controller.tasksValue,
+                builder: (_, tasks, __) => Text("${tasks.length} items"),
+              ),
+              SizedBox(width: 4),
               IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () async {
@@ -86,16 +89,16 @@ class _BuilderListView extends StatelessWidget {
     final controller = MyInheritedWidget.of(context).controller;
     controller.loadTasks();
 
-    return ValueListenableBuilder(
+    var listView = ValueListenableBuilder(
       valueListenable: controller.tasksValue,
       builder: (_, tasks, __) => Expanded(
         child: ListView.builder(
           itemCount: tasks.length,
           itemBuilder: (_, i) => Container(
             decoration: BoxDecoration(
-                color: Colors.grey[299],
-                borderRadius: BorderRadius.circular(8)),
-            margin: EdgeInsets.only(top: 4),
+                color: Colors.grey[150],
+                borderRadius: BorderRadius.circular(12)),
+            margin: EdgeInsets.only(top: 4, left: 4),
             height: 100,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,6 +125,11 @@ class _BuilderListView extends StatelessWidget {
           ),
         ),
       ),
+    );
+
+    return ValueListenableBuilder(
+      valueListenable: controller.loadValue,
+      builder: (_, load, __) => load ? listView : CircularProgressIndicator(),
     );
   }
 }

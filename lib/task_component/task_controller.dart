@@ -5,9 +5,13 @@ import 'package:task_tracker/task_component/services/task_service.dart';
 class TaskController {
   final service = TaskService();
   final tasksValue = ValueNotifier(<TaskModel>[]);
+  final loadValue = ValueNotifier(false);
 
   Future<void> loadTasks() async {
+    this.loadValue.value = false;
     this.tasksValue.value = [...await this.service.getAll()];
+    await Future.delayed(Duration(seconds: 10));
+    this.loadValue.value = true;
   }
 
   Future<void> save(TaskModel task) async {
