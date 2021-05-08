@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:task_tracker/task_component/model/task_model.dart';
+import 'package:task_tracker/task_component/my_inherited_widget.dart';
 import 'package:task_tracker/task_component/task_controller.dart';
 
-class TaskPage extends StatelessWidget {
-  void load() async {
-    final controller = TaskController();
-    controller.save(TaskModel("1", "Mi tarea", "${DateTime.now()}", false));
-    await controller.loadTasks();
-    print("Mis tareas: ${controller.vnTasks.value.toString()}");
+class TaskPage extends StatefulWidget {
+  @override
+  _TaskPageState createState() => _TaskPageState();
+}
+
+class _TaskPageState extends State<TaskPage> {
+  var controller = TaskController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    this.controller = null;
   }
 
   @override
   Widget build(BuildContext context) {
-    //
-    load();
-    //
-    return Scaffold(
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: _BuilderBody(),
+    return MyInheritedWidget(
+      controller: this.controller,
+      child: Scaffold(
+        body: Align(
+          alignment: Alignment.topCenter,
+          child: _BuilderBody(),
+        ),
       ),
     );
   }
@@ -27,6 +34,7 @@ class TaskPage extends StatelessWidget {
 class _BuilderBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final controller = MyInheritedWidget.of(context).controller;
     return Container(
       width: 600,
       margin: EdgeInsets.all(16),
@@ -46,9 +54,21 @@ class _BuilderBody extends StatelessWidget {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Expanded(child: Container()),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text("Add"),
+              IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () async {
+                    await controller.deleteAll();
+                  }),
+              SizedBox(width: 4),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () async {
+                  await controller.save(TaskModel(
+                      "${UniqueKey()}",
+                      "${UniqueKey()} ${DateTime.now()}",
+                      "${DateTime.now()}",
+                      false));
+                },
               )
             ],
           ),
@@ -63,32 +83,42 @@ class _BuilderBody extends StatelessWidget {
 class _BuilderListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: 5,
-        itemBuilder: (_, i) => Container(
-          decoration: BoxDecoration(
-              color: Colors.grey[299], borderRadius: BorderRadius.circular(8)),
-          margin: EdgeInsets.only(top: 4),
-          height: 100,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "aljsdasdasjdoajsd",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Expanded(child: Container()),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.delete),
-                  )
-                ],
-              ),
-              Text("aljsdasdasjdoajsdapḱedpjefdqwepqpoekqopweqpokwekop"),
-            ],
+    final controller = MyInheritedWidget.of(context).controller;
+    controller.loadTasks();
+
+    return ValueListenableBuilder(
+      valueListenable: controller.tasksValue,
+      builder: (_, tasks, __) => Expanded(
+        child: ListView.builder(
+          itemCount: tasks.length,
+          itemBuilder: (_, i) => Container(
+            decoration: BoxDecoration(
+                color: Colors.grey[299],
+                borderRadius: BorderRadius.circular(8)),
+            margin: EdgeInsets.only(top: 4),
+            height: 100,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "${tasks[i].day}",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(child: Container()),
+                    IconButton(
+                      onPressed: () {
+                        controller.delete(tasks[i]);
+                      },
+                      icon: Icon(Icons.delete),
+                    )
+                  ],
+                ),
+                Text("${tasks[i].text}"),
+              ],
+            ),
           ),
         ),
       ),
