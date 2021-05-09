@@ -2,7 +2,7 @@ class TaskModel {
   final String id;
   final String text;
   final String day;
-  final bool reminder;
+  bool reminder;
 
   TaskModel(this.id, this.text, this.day, this.reminder);
 
@@ -11,7 +11,7 @@ class TaskModel {
       json['id'],
       json['text'],
       json['day'],
-      json['reminder'].toString().contains("true"),
+      json['reminder'],
     );
   }
 

@@ -113,6 +113,14 @@ class _BuilderListView extends StatelessWidget {
                     ),
                     Expanded(child: Container()),
                     IconButton(
+                        onPressed: () {
+                          controller.reminder(tasks[i]);
+                        },
+                        icon: Icon(tasks[i].reminder
+                            ? Icons.star
+                            : Icons.star_border)),
+                    SizedBox(width: 4),
+                    IconButton(
                       onPressed: () {
                         controller.delete(tasks[i]);
                       },

@@ -14,7 +14,10 @@ class TaskService {
 
   Future<List<TaskModel>> getAll() async {
     final prefs = await SharedPreferences.getInstance();
-    String value = prefs.getString(_key)!;
+    String? value = prefs.getString(_key);
+    if (value == null) {
+      return [];
+    }
     return (json.decode(value) as List)
         .map((e) => TaskModel.fromJson(e))
         .toList();
