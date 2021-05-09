@@ -10,7 +10,8 @@ class TaskController {
   Future<void> loadTasks() async {
     this.loadValue.value = false;
     this.tasksValue.value = [...await this.service.getAll()];
-    await Future.delayed(Duration(seconds: 10));
+    //TODO: Espera 3 segundos
+    await Future.delayed(Duration(seconds: 1));
     this.loadValue.value = true;
   }
 

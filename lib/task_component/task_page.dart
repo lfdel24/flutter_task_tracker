@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_tracker/task_component/model/task_model.dart';
 import 'package:task_tracker/task_component/my_inherited_widget.dart';
-import 'package:task_tracker/task_component/task_controller.dart';
+import 'package:task_tracker/task_component/controller/task_controller.dart';
 
 class TaskPage extends StatefulWidget {
   @override
@@ -14,7 +14,7 @@ class _TaskPageState extends State<TaskPage> {
   @override
   void dispose() {
     super.dispose();
-    this.controller = null;
+    // this.controller.dispose();
   }
 
   @override
@@ -34,7 +34,7 @@ class _TaskPageState extends State<TaskPage> {
 class _BuilderBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = MyInheritedWidget.of(context).controller;
+    final controller = MyInheritedWidget.of(context)!.controller;
     return Container(
       width: 600,
       margin: EdgeInsets.all(16),
@@ -54,7 +54,8 @@ class _BuilderBody extends StatelessWidget {
               Expanded(child: Container()),
               ValueListenableBuilder(
                 valueListenable: controller.tasksValue,
-                builder: (_, tasks, __) => Text("${tasks.length} items"),
+                builder: (_, List<TaskModel> tasks, __) =>
+                    Text("${tasks.length} items"),
               ),
               SizedBox(width: 4),
               IconButton(
@@ -86,12 +87,12 @@ class _BuilderBody extends StatelessWidget {
 class _BuilderListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = MyInheritedWidget.of(context).controller;
+    final controller = MyInheritedWidget.of(context)!.controller;
     controller.loadTasks();
 
     var listView = ValueListenableBuilder(
       valueListenable: controller.tasksValue,
-      builder: (_, tasks, __) => Expanded(
+      builder: (_, List<TaskModel> tasks, __) => Expanded(
         child: ListView.builder(
           itemCount: tasks.length,
           itemBuilder: (_, i) => Container(
@@ -129,7 +130,8 @@ class _BuilderListView extends StatelessWidget {
 
     return ValueListenableBuilder(
       valueListenable: controller.loadValue,
-      builder: (_, load, __) => load ? listView : CircularProgressIndicator(),
+      builder: (_, bool load, __) =>
+          load ? listView : CircularProgressIndicator(),
     );
   }
 }

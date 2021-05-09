@@ -6,12 +6,12 @@ class TaskModel {
 
   TaskModel(this.id, this.text, this.day, this.reminder);
 
-  factory TaskModel.fromJson(Map<String, dynamic> jsonData) {
+  factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
-      jsonData['id'],
-      jsonData['text'],
-      jsonData['day'],
-      jsonData['reminder'],
+      json['id'],
+      json['text'],
+      json['day'],
+      json['reminder'].toString().contains("true"),
     );
   }
 

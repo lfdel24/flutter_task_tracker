@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:task_tracker/task_component/task_controller.dart';
+import 'package:task_tracker/task_component/controller/task_controller.dart';
 
 class MyInheritedWidget extends InheritedWidget {
   final Widget child;
   final TaskController controller;
 
-  MyInheritedWidget({this.child, this.controller}) : super(child: child);
+  MyInheritedWidget({required this.child, required this.controller})
+      : super(child: child);
 
-  static MyInheritedWidget of(BuildContext context) {
+  static MyInheritedWidget? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType(aspect: TaskController);
   }
 
