@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:task_tracker/task_component/model/task_model.dart';
+import 'package:task_tracker/task_component/model/task.dart';
 import 'package:task_tracker/task_component/my_inherited_widget.dart';
 import 'package:task_tracker/task_component/controller/task_controller.dart';
+import 'package:task_tracker/task_component/new_task.dart';
 
 class TaskPage extends StatefulWidget {
   @override
@@ -47,14 +48,14 @@ class _BuilderBody extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(
+              Expanded(
+                  child: Text(
                 "Task Tracker | lfdel24@gmail.com",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-              ),
-              Expanded(child: Container()),
+              )),
               ValueListenableBuilder(
-                valueListenable: controller.tasksValue,
-                builder: (_, List<TaskModel> tasks, __) =>
+                valueListenable: controller.tasks,
+                builder: (_, List<Task> tasks, __) =>
                     Text("${tasks.length} items"),
               ),
               SizedBox(width: 4),
@@ -67,7 +68,7 @@ class _BuilderBody extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () async {
-                  await controller.save(TaskModel(
+                  await controller.save(Task(
                       "${UniqueKey()}",
                       "${UniqueKey()} ${DateTime.now()}",
                       "${DateTime.now()}",
@@ -76,6 +77,9 @@ class _BuilderBody extends StatelessWidget {
               )
             ],
           ),
+          Divider(),
+          SizedBox(height: 16),
+          NewTask(),
           SizedBox(height: 16),
           _BuilderListView(),
         ],
@@ -91,8 +95,8 @@ class _BuilderListView extends StatelessWidget {
     controller.loadTasks();
 
     var listView = ValueListenableBuilder(
-      valueListenable: controller.tasksValue,
-      builder: (_, List<TaskModel> tasks, __) => Expanded(
+      valueListenable: controller.tasks,
+      builder: (_, List<Task> tasks, __) => Expanded(
         child: ListView.builder(
           itemCount: tasks.length,
           itemBuilder: (_, i) => Container(
@@ -116,7 +120,7 @@ class _BuilderListView extends StatelessWidget {
                         onPressed: () {
                           controller.reminder(tasks[i]);
                         },
-                        icon: Icon(tasks[i].reminder
+                        icon: Icon(tasks[i].favorite
                             ? Icons.star
                             : Icons.star_border)),
                     SizedBox(width: 4),
@@ -129,6 +133,7 @@ class _BuilderListView extends StatelessWidget {
                   ],
                 ),
                 Text("${tasks[i].text}"),
+                Divider(),
               ],
             ),
           ),
@@ -137,7 +142,7 @@ class _BuilderListView extends StatelessWidget {
     );
 
     return ValueListenableBuilder(
-      valueListenable: controller.loadValue,
+      valueListenable: controller.isLoading,
       builder: (_, bool load, __) =>
           load ? listView : CircularProgressIndicator(),
     );
