@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:task_tracker/my_value_notifier.dart';
 import 'package:task_tracker/task_component/model/task.dart';
@@ -6,38 +5,39 @@ import 'package:task_tracker/task_component/services/task_service.dart';
 
 class TaskController {
   final service = TaskService();
-  final tasks = ValueNotifier(<Task>[]);
+  final tasks = MyValueNotifier(<Task>[]);
   var task = MyValueNotifier(Task("$UniqueKey", "", "", false));
-  final isLoading = ValueNotifier(false);
+  final isLoading = MyValueNotifier(false);
+  final opacityLevel = MyValueNotifier(0.0);
+
+  void changeOpacityLevel() {
+    this.opacityLevel.value = this.opacityLevel.value == 0 ? 1.0 : 0.0;
+  }
 
   Future<void> loadTasks() async {
     this.isLoading.value = false;
-    this.tasks.value = [...await this.service.getAll()];
-    // await Future.delayed(Duration(seconds: 3));
+    this.tasks.value = await this.service.getAll();
     this.isLoading.value = true;
   }
 
-  Future<void> save(Task task) async {
-    this.tasks.value = [...this.tasks.value..add(task)];
+  Future<void> save() async {
+    this.tasks.value = this.tasks.value..add(this.task.value);
     saveAll();
   }
 
   Future<void> reminder(Task task) async {
-    this.tasks.value = [
-      ...this.tasks.value
-        ..forEach((el) {
-          if (el.id.contains(task.id)) {
-            task.favorite = !task.favorite;
-            print(task);
-            el = task;
-          }
-        })
-    ];
+    task.favorite = !task.favorite;
+    this.tasks.value = this.tasks.value
+      ..forEach((el) {
+        if (el.id.contains(task.id)) {
+          el = task;
+        }
+      });
     saveAll();
   }
 
   Future<void> delete(Task task) async {
-    this.tasks.value = [...this.tasks.value..remove(task)];
+    this.tasks.value = this.tasks.value..remove(task);
     await saveAll();
   }
 

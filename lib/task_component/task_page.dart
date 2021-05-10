@@ -61,27 +61,32 @@ class _BuilderBody extends StatelessWidget {
               SizedBox(width: 4),
               IconButton(
                   icon: Icon(Icons.delete),
-                  onPressed: () async {
-                    await controller.deleteAll();
-                  }),
+                  onPressed: () async => await controller.deleteAll()),
               SizedBox(width: 4),
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () async {
-                  await controller.save(Task(
-                      "${UniqueKey()}",
-                      "${UniqueKey()} ${DateTime.now()}",
-                      "${DateTime.now()}",
-                      false));
-                },
+              ValueListenableBuilder(
+                valueListenable: controller.opacityLevel,
+                builder: (_, double opacityLevel, __) => IconButton(
+                    icon: Icon(opacityLevel == 1 ? Icons.close : Icons.add),
+                    onPressed: () => controller.changeOpacityLevel()),
               )
             ],
           ),
           Divider(),
-          SizedBox(height: 16),
-          NewTask(),
-          SizedBox(height: 16),
-          _BuilderListView(),
+          SizedBox(height: 4),
+          ValueListenableBuilder(
+            valueListenable: controller.opacityLevel,
+            builder: (_, double opacityLevel, __) => AnimatedOpacity(
+              curve: Curves.bounceIn,
+              duration: Duration(seconds: 2),
+              opacity: opacityLevel,
+              child: Visibility(
+                visible: opacityLevel == 1,
+                child: NewTask(),
+              ),
+            ),
+          ),
+          SizedBox(height: 6),
+          Expanded(child: _BuilderListView()),
         ],
       ),
     );
@@ -96,49 +101,48 @@ class _BuilderListView extends StatelessWidget {
 
     var listView = ValueListenableBuilder(
       valueListenable: controller.tasks,
-      builder: (_, List<Task> tasks, __) => Expanded(
-        child: ListView.builder(
-          itemCount: tasks.length,
-          itemBuilder: (_, i) => Container(
-            decoration: BoxDecoration(
-                color: Colors.grey[150],
-                borderRadius: BorderRadius.circular(12)),
-            margin: EdgeInsets.only(top: 4, left: 4),
-            height: 100,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+      builder: (_, List<Task> tasks, __) => tasks.isEmpty
+          ? Text("0 items")
+          : ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (_, i) => Container(
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(12)),
+                margin: EdgeInsets.only(top: 4, left: 4),
+                height: 80,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "${tasks[i].day}",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    Row(
+                      children: [
+                        Text(
+                          "${tasks[i].day}",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(child: Container()),
+                        IconButton(
+                            onPressed: () {
+                              controller.reminder(tasks[i]);
+                            },
+                            icon: Icon(tasks[i].favorite
+                                ? Icons.star
+                                : Icons.star_border)),
+                        SizedBox(width: 4),
+                        IconButton(
+                          onPressed: () {
+                            controller.delete(tasks[i]);
+                          },
+                          icon: Icon(Icons.delete),
+                        )
+                      ],
                     ),
-                    Expanded(child: Container()),
-                    IconButton(
-                        onPressed: () {
-                          controller.reminder(tasks[i]);
-                        },
-                        icon: Icon(tasks[i].favorite
-                            ? Icons.star
-                            : Icons.star_border)),
-                    SizedBox(width: 4),
-                    IconButton(
-                      onPressed: () {
-                        controller.delete(tasks[i]);
-                      },
-                      icon: Icon(Icons.delete),
-                    )
+                    Text("${tasks[i].text}"),
+                    Divider(),
                   ],
                 ),
-                Text("${tasks[i].text}"),
-                Divider(),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
 
     return ValueListenableBuilder(

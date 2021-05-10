@@ -1,7 +1,7 @@
 class Task {
   final String id;
-  final String text;
-  final String day;
+  String text;
+  String day;
   bool favorite;
 
   Task(this.id, this.text, this.day, this.favorite);
