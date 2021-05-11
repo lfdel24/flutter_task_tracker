@@ -4,12 +4,12 @@ import 'package:task_tracker/task_component/model/task.dart';
 import 'package:task_tracker/task_component/services/task_service.dart';
 
 class TaskController extends GetxController {
-  var service = TaskService();
-  var tasks = <Task>[].reactive;
-  var task = Task("${UniqueKey()}", "", "", false).reactive;
+  final service = TaskService();
+  List<Task> tasks = <Task>[];
+  Task task = Task("${UniqueKey()}", "", "", false);
   bool isVisible = false;
-  var search = "".reactive;
-  var isLoading = false.reactive;
+  String search = "";
+  bool isLoading = false;
 
   void updateIsVisible() {
     this.isVisible = !this.isVisible;
@@ -28,38 +28,39 @@ class TaskController extends GetxController {
   }
 
   Future<void> loadTasks() async {
-    this.isLoading.value = true;
-    this.tasks.value = await this.service.getAll();
-    this.isLoading.value = false;
+    this.isLoading = true;
+    this.tasks = await this.service.getAll();
+    await Future.delayed(Duration(seconds: 3));
+    this.isLoading = false;
+    update();
   }
 
   Future<void> save() async {
-    this.tasks.value!.add(this.task.value!);
-    saveAll();
+    this.tasks.add(this.task);
+    this.task = Task("${UniqueKey()}", "", "", false);
+    _saveAll();
+    update();
   }
 
   Future<void> reminder(Task task) async {
     task.favorite = !task.favorite;
-    // this.tasks.value = this.tasks.value
-    //   ..forEach((el) {
-    //     if (el.id.contains(task.id)) {
-    //       el = task;
-    //     }
-    //   });
-    saveAll();
+    _saveAll();
+    update();
   }
 
   Future<void> delete(Task task) async {
-    this.tasks.value!.remove(task);
-    await saveAll();
-  }
-
-  Future<void> saveAll() async {
-    await this.service.save(this.tasks.value!);
+    this.tasks.remove(task);
+    await _saveAll();
+    update();
   }
 
   Future<void> deleteAll() async {
-    this.tasks.value = [];
-    await this.service.save(this.tasks.value!);
+    this.tasks = [];
+    await this.service.save(this.tasks);
+    update();
+  }
+
+  Future<void> _saveAll() async {
+    await this.service.save(this.tasks);
   }
 }
