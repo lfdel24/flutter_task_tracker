@@ -10,21 +10,11 @@ class TaskController extends GetxController {
   bool isVisible = false;
   String search = "";
   bool isLoading = false;
+  String filter = "";
 
   void updateIsVisible() {
     this.isVisible = !this.isVisible;
     update();
-  }
-
-  void searchTask(String value) {
-    // if (value.isEmpty) {
-    //   return;
-    // }
-    // for (var item in this.tasks.value) {
-    //   if (item.text.contains(value)) {
-    //     print(item);
-    //   }
-    // }
   }
 
   Future<void> loadTasks() async {

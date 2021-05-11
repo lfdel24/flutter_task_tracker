@@ -15,55 +15,64 @@ class _NewTaskState extends State<NewTask> {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<TaskController>();
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            autofocus: true,
-            controller: textController,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              labelText: "Task",
-            ),
-          ),
-          TextField(
-            autofocus: true,
-            controller: dateController,
-            keyboardType: TextInputType.datetime,
-            decoration: InputDecoration(
-              labelText: "Date",
-            ),
-          ),
-          Row(
+    return GetBuilder<TaskController>(
+      init: controller,
+      builder: (c) => Visibility(
+        visible: c.isVisible,
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GetBuilder<TaskController>(
-                  builder: (c) => Checkbox(
-                      value: c.task.favorite,
-                      onChanged: (bool? value) {
-                        controller.task.favorite = value!;
-                        controller.update();
-                      })),
-              SizedBox(width: 4),
-              Text("Favorite"),
+              TextField(
+                autofocus: true,
+                controller: textController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  labelText: "Task",
+                ),
+              ),
+              TextField(
+                autofocus: true,
+                controller: dateController,
+                keyboardType: TextInputType.datetime,
+                decoration: InputDecoration(
+                  labelText: "Date",
+                ),
+              ),
+              Row(
+                children: [
+                  GetBuilder<TaskController>(
+                      builder: (c) => Checkbox(
+                          value: c.task.favorite,
+                          onChanged: (bool? value) {
+                            controller.task.favorite = value!;
+                            controller.update();
+                          })),
+                  SizedBox(width: 4),
+                  Text("Favorite"),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  TextButton(
+                      onPressed: () async {
+                        controller.task.text = textController.text;
+                        controller.task.day = dateController.text;
+                        textController.text = "";
+                        dateController.text = "${DateTime.now()}";
+                        await controller.save();
+                        controller.updateIsVisible();
+                      },
+                      child: Text("Save")),
+                  SizedBox(width: 4),
+                  TextButton(onPressed: () {}, child: Text("Cancel")),
+                ],
+              ),
+              SizedBox(height: 6),
             ],
           ),
-          SizedBox(height: 8),
-          Row(
-            children: [
-              TextButton(
-                  onPressed: () async {
-                    controller.task.text = textController.text;
-                    controller.task.day = dateController.text;
-                    await controller.save();
-                    controller.updateIsVisible();
-                  },
-                  child: Text("Save")),
-              SizedBox(width: 4),
-              TextButton(onPressed: () {}, child: Text("Cancel")),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
