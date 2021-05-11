@@ -1,32 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:task_tracker/task_component/model/task.dart';
-import 'package:task_tracker/task_component/my_inherited_widget.dart';
+import 'package:get/get.dart';
 import 'package:task_tracker/task_component/controller/task_controller.dart';
 import 'package:task_tracker/task_component/new_task.dart';
 
-class TaskPage extends StatefulWidget {
-  @override
-  _TaskPageState createState() => _TaskPageState();
-}
-
-class _TaskPageState extends State<TaskPage> {
-  var controller = TaskController();
-
-  @override
-  void dispose() {
-    super.dispose();
-    // this.controller.dispose();
-  }
-
+class TaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MyInheritedWidget(
-      controller: this.controller,
-      child: Scaffold(
-        body: Align(
-          alignment: Alignment.topCenter,
-          child: _BuilderBody(),
-        ),
+    Get.put(TaskController());
+
+    return Scaffold(
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: _BuilderBody(),
       ),
     );
   }
@@ -35,7 +20,7 @@ class _TaskPageState extends State<TaskPage> {
 class _BuilderBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = MyInheritedWidget.of(context)!.controller;
+    final controller = Get.find<TaskController>();
     return Container(
       width: 600,
       margin: EdgeInsets.all(16),
@@ -46,109 +31,123 @@ class _BuilderBody extends StatelessWidget {
       )),
       child: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                  child: Text(
-                "Task Tracker | lfdel24@gmail.com",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-              )),
-              ValueListenableBuilder(
-                valueListenable: controller.tasks,
-                builder: (_, List<Task> tasks, __) =>
-                    Text("${tasks.length} items"),
-              ),
-              SizedBox(width: 4),
-              IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () async => await controller.deleteAll()),
-              SizedBox(width: 4),
-              ValueListenableBuilder(
-                valueListenable: controller.opacityLevel,
-                builder: (_, double opacityLevel, __) => IconButton(
-                    icon: Icon(opacityLevel == 1 ? Icons.close : Icons.add),
-                    onPressed: () => controller.changeOpacityLevel()),
-              )
-            ],
-          ),
+          _BuilderAppBar(),
           Divider(),
-          SizedBox(height: 4),
-          ValueListenableBuilder(
-            valueListenable: controller.opacityLevel,
-            builder: (_, double opacityLevel, __) => AnimatedOpacity(
-              curve: Curves.bounceIn,
-              duration: Duration(seconds: 2),
-              opacity: opacityLevel,
-              child: Visibility(
-                visible: opacityLevel == 1,
-                child: NewTask(),
-              ),
+          // _BuilderSearchTask(),
+
+          GetBuilder<TaskController>(
+            init: controller,
+            builder: (c) => Visibility(
+              visible: c.isVisible,
+              child: NewTask(),
             ),
           ),
           SizedBox(height: 6),
-          Expanded(child: _BuilderListView()),
+          // Expanded(child: _BuilderListView()),
         ],
       ),
     );
   }
 }
 
-class _BuilderListView extends StatelessWidget {
+class _BuilderAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = MyInheritedWidget.of(context)!.controller;
-    controller.loadTasks();
-
-    var listView = ValueListenableBuilder(
-      valueListenable: controller.tasks,
-      builder: (_, List<Task> tasks, __) => tasks.isEmpty
-          ? Text("0 items")
-          : ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (_, i) => Container(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(12)),
-                margin: EdgeInsets.only(top: 4, left: 4),
-                height: 80,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "${tasks[i].day}",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(child: Container()),
-                        IconButton(
-                            onPressed: () {
-                              controller.reminder(tasks[i]);
-                            },
-                            icon: Icon(tasks[i].favorite
-                                ? Icons.star
-                                : Icons.star_border)),
-                        SizedBox(width: 4),
-                        IconButton(
-                          onPressed: () {
-                            controller.delete(tasks[i]);
-                          },
-                          icon: Icon(Icons.delete),
-                        )
-                      ],
-                    ),
-                    Text("${tasks[i].text}"),
-                    Divider(),
-                  ],
-                ),
-              ),
-            ),
-    );
-
-    return ValueListenableBuilder(
-      valueListenable: controller.isLoading,
-      builder: (_, bool load, __) =>
-          load ? listView : CircularProgressIndicator(),
+    final controller = Get.find<TaskController>();
+    return Row(
+      children: [
+        Expanded(
+            child: Text(
+          "Task Tracker | lfdel24@gmail.com",
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+        )),
+        // Obx(() => Text("${controller.tasks.value!.length} items")),
+        SizedBox(width: 4),
+        IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () async => await controller.deleteAll()),
+        SizedBox(width: 4),
+        IconButton(
+            // icon: Icon(controller.isVisible ? Icons.close : Icons.add),
+            icon: Icon(Icons.add),
+            onPressed: () => controller.updateIsVisible()),
+      ],
     );
   }
 }
+
+// class _BuilderSearchTask extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     final controller = context.read<TaskController>();
+//     return Container(
+//       child: Row(
+//         children: [
+//           Expanded(
+//             child: TextField(
+//               autofocus: true,
+//               keyboardType: TextInputType.text,
+//               decoration: InputDecoration(
+//                 labelText: "Search task",
+//               ),
+//               onChanged: (String value) => controller.searchTask(value),
+//             ),
+//           ),
+//           IconButton(icon: Icon(Icons.search), onPressed: () {}),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// class _BuilderListView extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     final controller = context.read<TaskController>();
+//     Widget listView = controller.tasks.isEmpty
+//         ? Text("0 items")
+//         : ListView.builder(
+//             itemCount: controller.tasks.length,
+//             itemBuilder: (_, i) => Container(
+//               decoration:
+//                   BoxDecoration(borderRadius: BorderRadius.circular(12)),
+//               margin: EdgeInsets.only(top: 4, left: 4),
+//               height: 80,
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Row(
+//                     children: [
+//                       Text(
+//                         "${controller.tasks[i].day}",
+//                         style: TextStyle(
+//                             fontSize: 16, fontWeight: FontWeight.bold),
+//                       ),
+//                       Expanded(child: Container()),
+//                       IconButton(
+//                           onPressed: () {
+//                             controller.reminder(controller.tasks[i]);
+//                           },
+//                           icon: Icon(controller.tasks[i].favorite
+//                               ? Icons.star
+//                               : Icons.star_border)),
+//                       SizedBox(width: 4),
+//                       IconButton(
+//                         onPressed: () {
+//                           controller.delete(controller.tasks[i]);
+//                         },
+//                         icon: Icon(Icons.delete),
+//                       )
+//                     ],
+//                   ),
+//                   Text("${controller.tasks[i].text}"),
+//                   Divider(),
+//                 ],
+//               ),
+//             ),
+//           );
+
+//     controller.loadTasks();
+//     return Text("${context.watch<TaskController>().isLoading}");
+//   }
+// }
