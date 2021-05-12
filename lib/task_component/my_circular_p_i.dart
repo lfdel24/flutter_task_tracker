@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MyCPI extends StatelessWidget {
+class MyCircularPI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(

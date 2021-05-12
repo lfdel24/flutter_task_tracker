@@ -11,6 +11,17 @@ class TaskController extends GetxController {
   String search = "";
   bool isLoading = false;
   String filter = "";
+  bool favorites = false;
+
+  String countItems() {
+    int favorites = this.tasks.where((el) => el.favorite).length;
+    return "${this.tasks.length} items / $favorites favorites";
+  }
+
+  bool filterTasks(Task task) {
+    return task.text.toLowerCase().contains(filter.toLowerCase()) &&
+        (favorites == false || task.favorite == true);
+  }
 
   void updateIsVisible() {
     this.isVisible = !this.isVisible;
@@ -20,7 +31,7 @@ class TaskController extends GetxController {
   Future<void> loadTasks() async {
     this.isLoading = true;
     this.tasks = await this.service.getAll();
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 1));
     this.isLoading = false;
     update();
   }
