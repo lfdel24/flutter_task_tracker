@@ -61,8 +61,7 @@ class _NewTaskState extends State<NewTask> {
                         controller.task.day = dateController.text;
                         textController.text = "";
                         dateController.text = "${DateTime.now()}";
-                        await controller.save();
-                        controller.updateIsVisible();
+                        await controller.save(context);
                       },
                       child: Text("Save")),
                   SizedBox(width: 4),

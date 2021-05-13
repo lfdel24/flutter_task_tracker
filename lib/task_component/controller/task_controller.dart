@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_tracker/task_component/model/task.dart';
+import 'package:task_tracker/task_component/my_snack_bar.dart';
 import 'package:task_tracker/task_component/services/task_service.dart';
 
 class TaskController extends GetxController {
@@ -36,11 +37,27 @@ class TaskController extends GetxController {
     update();
   }
 
-  Future<void> save() async {
-    this.tasks.add(this.task);
-    this.task = Task("${UniqueKey()}", "", "", false);
-    _saveAll();
-    update();
+  Future<void> save(BuildContext context) async {
+    if (isValidTask().isNotEmpty) {
+      MySnackBar.show(context, isValidTask());
+    } else {
+      this.tasks.add(this.task);
+      this.task = Task("${UniqueKey()}", "", "", false);
+      _saveAll();
+      update();
+      updateIsVisible();
+      MySnackBar.show(context, "Tash saved");
+    }
+  }
+
+  String isValidTask() {
+    String message = "";
+    bool isValid = true;
+    if (this.task.text.isEmpty) {
+      message = "The Text is required";
+      isValid = false;
+    }
+    return message;
   }
 
   Future<void> reminder(Task task) async {
