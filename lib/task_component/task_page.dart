@@ -4,6 +4,7 @@ import 'package:task_tracker/task_component/controller/task_controller.dart';
 import 'package:task_tracker/task_component/model/task.dart';
 import 'package:task_tracker/task_component/my_button.dart';
 import 'package:task_tracker/task_component/my_circular_p_i.dart';
+import 'package:task_tracker/task_component/my_snack_bar.dart';
 import 'package:task_tracker/task_component/new_task.dart';
 
 class TaskPage extends StatefulWidget {
@@ -38,7 +39,9 @@ class _BuilderBody extends StatelessWidget {
       width: 600,
       margin: EdgeInsets.all(16),
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.black)),
       child: Column(
         children: [
           _BuilderAppBar(),
@@ -136,11 +139,12 @@ class _BuilderListView extends StatelessWidget {
     controller.loadTasks();
     return GetBuilder<TaskController>(
         init: controller,
-        builder: (c) =>
-            c.isLoading ? MyCircularPI() : _builderListView(controller));
+        builder: (c) => c.isLoading
+            ? MyCircularPI()
+            : _builderListView(context, controller));
   }
 
-  Widget _builderListView(TaskController controller) {
+  Widget _builderListView(BuildContext context, TaskController controller) {
     return GetBuilder<TaskController>(
       init: controller,
       builder: (c) => Visibility(
@@ -185,6 +189,7 @@ class _BuilderListView extends StatelessWidget {
                                 IconButton(
                                   onPressed: () {
                                     c.delete(task);
+                                    MySnackBar.show(context, "Item delete");
                                   },
                                   icon: Icon(Icons.delete),
                                 )
