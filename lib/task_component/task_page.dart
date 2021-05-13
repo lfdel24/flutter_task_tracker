@@ -23,6 +23,7 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("_TaskPageState");
     return Scaffold(
       body: Align(
         alignment: Alignment.topCenter,
@@ -35,6 +36,7 @@ class _TaskPageState extends State<TaskPage> {
 class _BuilderBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print("_BuilderBody");
     return Container(
       width: 600,
       margin: EdgeInsets.all(16),
@@ -61,10 +63,21 @@ class _BuilderAppBar extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-            child: Text(
-          "Task Tracker | lfdel24@gmail.com",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-        )),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Task Tracker",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              ),
+              Text(
+                "lfdel24@gmail.com",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 4),
         GetBuilder<TaskController>(
           init: controller,
           builder: (c) => MyIconButton(
@@ -165,19 +178,21 @@ class _BuilderListView extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12)),
                         margin: EdgeInsets.only(top: 4, left: 4),
-                        height: 80,
+                        // height: 80,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Text(
-                                  "${task.day}",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
+                                Expanded(
+                                  child: Text(
+                                    "${task.text}",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                                Expanded(child: Container()),
+                                SizedBox(width: 8),
                                 IconButton(
                                     onPressed: () {
                                       c.reminder(task);
@@ -195,7 +210,8 @@ class _BuilderListView extends StatelessWidget {
                                 )
                               ],
                             ),
-                            Text("${task.text}"),
+                            SizedBox(height: 4),
+                            Text("${task.dayFormat()}"),
                             Divider(),
                           ],
                         ),

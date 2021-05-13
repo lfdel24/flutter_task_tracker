@@ -6,6 +6,13 @@ class Task {
 
   Task(this.id, this.text, this.day, this.favorite);
 
+  String dayFormat() {
+    if (this.day.length >= 16) {
+      return this.day.substring(2, 16);
+    }
+    return this.day;
+  }
+
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       json['id'],

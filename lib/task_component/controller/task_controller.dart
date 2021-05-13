@@ -41,10 +41,9 @@ class TaskController extends GetxController {
     if (isValidTask().isNotEmpty) {
       MySnackBar.show(context, isValidTask());
     } else {
-      this.tasks.add(this.task);
+      this.tasks.insert(0, this.task);
       this.task = Task("${UniqueKey()}", "", "", false);
       _saveAll();
-      update();
       updateIsVisible();
       MySnackBar.show(context, "Tash saved");
     }
@@ -52,10 +51,8 @@ class TaskController extends GetxController {
 
   String isValidTask() {
     String message = "";
-    bool isValid = true;
     if (this.task.text.isEmpty) {
       message = "The Text is required";
-      isValid = false;
     }
     return message;
   }

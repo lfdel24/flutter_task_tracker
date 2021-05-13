@@ -36,7 +36,7 @@ class _NewTaskState extends State<NewTask> {
                 controller: dateController,
                 keyboardType: TextInputType.datetime,
                 decoration: InputDecoration(
-                  labelText: "Date",
+                  labelText: "Date and time ",
                 ),
               ),
               Row(

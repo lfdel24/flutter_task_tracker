@@ -1,0 +1,4 @@
+#Thu May 13 14:57:16 COT 2021
+base.0=/home/leo/development/flutter/task_tracker/build/app/intermediates/dex/release/minifyReleaseWithR8/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
